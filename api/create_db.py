@@ -40,7 +40,7 @@ class Permits(Base):
 class Clients(Base):
     __tablename__ = 'Заказчики'
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    name = Column(String)
+    name = Column(String, unique=True)
     permit = relationship('Permits', back_populates='client')
 
     def __repr__(self):
@@ -51,7 +51,7 @@ class Clients(Base):
 class Owners(Base):
     __tablename__ = 'Собственники'
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    name = Column(String)
+    name = Column(String, unique=True)
     permit = relationship('Permits', back_populates='owner')
 
     def __repr__(self):
@@ -74,3 +74,14 @@ class PermitStats(Base):
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
 
+
+class SessionWrap(object):
+    def __init__(self, session_class):
+        self.session = session_class()
+
+    def __enter__(self):
+        return self.session
+
+    def __exit__(self, *args):
+        # print(args)
+        self.session.close()
