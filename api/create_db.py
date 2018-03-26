@@ -31,32 +31,10 @@ class Permits(Base):
     description  = Column('Примечания', String())
 
     def __repr__(self):
-        return "Заказчик: {}, Собственник: {},РегЗнак: {}, ЗонаДействия: {},Статус: {}, ДатаНачала: {}, " \
-               "ДатаКонца: {},Цена: {}, Оплата: {}, Примечания: {}".format(self.client, self.owner, self.car_number,
-                                                                           self.zone, self.status, self.date_start,
-                                                                           self.date_end, self.price, self.payment,
-                                                                           self.description)
-
-
-class PermitStats(Base):
-    __tablename__ = 'СтатусыПропуска'
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    name = Column(String)
-    permit = relationship('Permits', back_populates='status')
-
-    def __repr__(self):
-        return "<Status(id='{}', name='{}')>".format(self.id, self.name)
-
-
-class Owners(Base):
-    __tablename__ = 'Собственники'
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    name = Column(String)
-    permit = relationship('Permits', back_populates='owner')
-
-    def __repr__(self):
-        return "<Status(id='{}', name='{}')>".format(self.id, self.name)
-    # permit_car_number = Column(String(), ForeignKey('Пропуски.РегЗнак'))
+        return "РегЗнак: {}, ЗонаДей.: {}, От: {:^10}, До: {:^10}, Зак.: {}, Собст.: {}, Статус: {}, Цена: {}, " \
+               "Оплата: {}, Примечания: {}".format(self.car_number, self.zone, str(self.date_start),
+                                                   str(self.date_end), self.client, self.owner, self.status,
+                                                   self.price, self.payment, self.description)
 
 
 class Clients(Base):
@@ -66,8 +44,31 @@ class Clients(Base):
     permit = relationship('Permits', back_populates='client')
 
     def __repr__(self):
-        return "<Status(id='{}', name='{}')>".format(self.id, self.name)
-    # permit_car_number = Column(String(), ForeignKey('Пропуски.РегЗнак'))
+        return self.name
+        # return "<Status(id='{}', name='{}')>".format(self.id, self.name)
+
+
+class Owners(Base):
+    __tablename__ = 'Собственники'
+    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    name = Column(String)
+    permit = relationship('Permits', back_populates='owner')
+
+    def __repr__(self):
+        return self.name
+        # return "<Status(id='{}', name='{}')>".format(self.id, self.name)
+
+
+class PermitStats(Base):
+    __tablename__ = 'СтатусыПропуска'
+    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    name = Column(String)
+    permit = relationship('Permits', back_populates='status')
+
+    def __repr__(self):
+        return self.name
+        # return "<Status(id='{}', name='{}')>".format(self.id, self.name)
+
 
 # PermitStats.__table__
 if __name__ == '__main__':
