@@ -29,12 +29,14 @@ class Permits(Base):
     price        = Column('Цена', Float())
     payment      = Column('Оплата', Float())
     description  = Column('Примечания', String())
+    silenced     = Column('Silenced', Boolean(), default=False)
 
     def __repr__(self):
         return "РегЗнак: {}, ЗонаДей.: {}, От: {:^10}, До: {:^10}, Зак.: {}, Собст.: {}, Статус: {}, Цена: {}, " \
-               "Оплата: {}, Примечания: {}".format(self.car_number, self.zone, str(self.date_start),
-                                                   str(self.date_end), self.client, self.owner, self.status,
-                                                   self.price, self.payment, self.description)
+               "Оплата: {}, Примечания: {}, Silenced: {}".format(self.car_number, self.zone, str(self.date_start),
+                                                                 str(self.date_end), self.client, self.owner,
+                                                                 self.status, self.price, self.payment,
+                                                                 self.description, self.silenced)
 
 
 class Clients(Base):
