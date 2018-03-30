@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Edit_Item_ui</class>
+ <widget class="QDialog" name="Edit_Item_ui">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>255</width>
+    <height>433</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="line_owner"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="line_client"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_client">
+     <property name="text">
+      <string>Заказчик</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_owner">
+     <property name="text">
+      <string>Владелец</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_car_number">
+     <property name="text">
+      <string>РегЗнак</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="line_car_number"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_zone">
+     <property name="text">
+      <string>Зона действия</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="line_zone"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_status">
+     <property name="text">
+      <string>Статус</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="line_status"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="QDateEdit" name="date_start">
+     <property name="displayFormat">
+      <string>dd/MM/yyyy</string>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QDateEdit" name="date_end">
+     <property name="currentSection">
+      <enum>QDateTimeEdit::DaySection</enum>
+     </property>
+     <property name="displayFormat">
+      <string>dd/MM/yyyy</string>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_date_start">
+     <property name="text">
+      <string>Дата начала</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_date_end">
+     <property name="text">
+      <string>Дата конца</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QLineEdit" name="line_price"/>
+   </item>
+   <item row="10" column="1">
+    <widget class="QLineEdit" name="line_payment"/>
+   </item>
+   <item row="11" column="1">
+    <widget class="QPlainTextEdit" name="plain_description"/>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="label_price">
+     <property name="text">
+      <string>Цена</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QLabel" name="label_payment">
+     <property name="text">
+      <string>Оплата</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="label_description">
+     <property name="text">
+      <string>Примечания</string>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QCheckBox" name="check_hidden">
+     <property name="text">
+      <string>Скрытый</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1">
+    <widget class="QCheckBox" name="check_silenced">
+     <property name="text">
+      <string>Напоминание</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="line_sts"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_sts">
+     <property name="text">
+      <string>СТС</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_eco">
+     <property name="text">
+      <string>Эко-класс</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="line_eco"/>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>line_car_number</tabstop>
+  <tabstop>line_client</tabstop>
+  <tabstop>line_owner</tabstop>
+  <tabstop>line_zone</tabstop>
+  <tabstop>line_status</tabstop>
+  <tabstop>date_start</tabstop>
+  <tabstop>date_end</tabstop>
+  <tabstop>line_price</tabstop>
+  <tabstop>line_payment</tabstop>
+  <tabstop>plain_description</tabstop>
+  <tabstop>buttonBox</tabstop>
+  <tabstop>check_hidden</tabstop>
+  <tabstop>check_silenced</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Edit_Item_ui</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Edit_Item_ui</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

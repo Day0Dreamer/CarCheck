@@ -21,8 +21,10 @@ class DB(object):
                 result.append(permit.dict())
         return result
 
-    def add_new_car(self, client_name=None, owner_name=None, car_number=None, zone=None, status=None, date_start=None,
-                    date_end=None, price=None, payment=None, description=None):
+    def add_new_car(self, client_name=None, owner_name=None, car_number=None, sts_number=None, zone=None, status=None,
+                    date_start=None, date_end=None, eco_class=None, price=None, payment=None, description=None,
+                    tba_1=None, silenced=None, hide=None):
+
         with SessionWrap(self.Session) as session:
             nan = False
             if isinstance(client_name, float):
@@ -41,11 +43,12 @@ class DB(object):
                 owner = Owners(name=owner_name)           # Create a new one
             elif owner is None and nan:
                 owner = session.query(Owners).filter(Owners.id == 0).first()
-
-            session.add(Permits(client=client, owner=owner, car_number=car_number, zone=zone,
-                                status=session.query(PermitStats).filter(PermitStats.name == status).first(),
-                                date_start=date_start, date_end=date_end, price=price, payment=payment,
-                                description=description))
+            
+            session.add(Permits(client=client, owner=owner, car_number=car_number, sts_number=sts_number, zone=zone,
+                                status=session.query(PermitStatus).filter(PermitStatus.name == status).first(),
+                                date_start=date_start, date_end=date_end, eco_class=eco_class, price=price,
+                                payment=payment, description=description, tba_1=tba_1, silenced=silenced, hide=hide))
+            print('adding new car')
             session.commit()
 
     def find_entry(self, request, column_of_interest):
@@ -54,14 +57,19 @@ class DB(object):
             'Clients': Permits.client.has(Clients.name.like('%{}%'.format(request))),
             'Owners': Permits.owner.has(Clients.name.like('%{}%'.format(request))),
             'РегЗнак': Permits.car_number.like('%{}%'.format(request)),
+            'СТС': Permits.sts_number.like('%{}%'.format(request)),
             'ЗонаДействия': Permits.zone.like('%{}%'.format(request)),
-            'PermitStats': Permits.status.has(Clients.name.like('%{}%'.format(request))),
+            'PermitStatus': Permits.status.has(Clients.name.like('%{}%'.format(request))),
             'ДатаНачала': Permits.date_start.like('%{}%'.format(request)),
             'ДатаКонца': Permits.date_end.like('%{}%'.format(request)),
+            'ЭкоКласс': Permits.eco_class.like('%{}%'.format(request)),
             'Цена': Permits.price.like('%{}%'.format(request)),
             'Оплата': Permits.payment.like('%{}%'.format(request)),
             'Примечания': Permits.description.like('%{}%'.format(request)),
-            'Silenced': Permits.silenced.like('%{}%'.format(request))}
+            'Путь': Permits.tba_1.like('%{}%'.format(request)),
+            'Silenced': Permits.silenced.like('%{}%'.format(request)),
+            'Hidden': Permits.hide.like('%{}%'.format(request))}
+
         column_of_interest = column_dict[column_of_interest]
         with SessionWrap(self.Session) as session:
             for permit in session.query(Permits).filter(column_of_interest).order_by(Permits.date_end):

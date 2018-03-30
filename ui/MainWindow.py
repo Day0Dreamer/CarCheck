@@ -1,8 +1,10 @@
 from ui.widgets.mainwindow_ui import Ui_MainWindow
+from ui.Edit_Item import UiEditItem
 from ui import stylesheet
 from PySide.QtGui import *
 from PySide.QtCore import *
 from datetime import date, datetime
+
 
 def translate(value, left_min, left_max, right_min, right_max):
     # Figure out how 'wide' each range is
@@ -31,6 +33,35 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setStyleSheet(stylesheet.houdini)
         # self.fill_table()
+
+        self.add_item_dialogue = UiEditItem()
+        self.add_item_dialogue.setStyleSheet(self.styleSheet())
+        self.add_item_dialogue.buttonBox.buttons()[0].setText('Add')
+        x = self.add_item_dialogue.buttonBox.addButton('Test', QDialogButtonBox.ApplyRole)
+        x.clicked.connect(self.add_item_dialogue.read_fields)
+        self.btn_add.clicked.connect(self.add_item_dialogue.exec_)
+
+        self.edit_item_dialogue = UiEditItem()
+        self.edit_item_dialogue.setStyleSheet(self.styleSheet())
+        self.edit_item_dialogue.buttonBox.buttons()[0].setText('Edit')
+        self.btn_edit.clicked.connect(self.edit_item_dialogue.exec_)
+
+        # Fill table with nothing
+        self.btn_2.clicked.connect(lambda: self.fill_table([{}]))
+
+        # Paint by date
+        self.btn_4.clicked.connect(self.paint_by_date)
+
+        self.name_interface()
+
+    def name_interface(self):
+        self.btn_1.setText('Загрузить таблицу')
+        self.btn_2.setText('Очистить таблицу')
+        self.btn_3.setText('Повторить поиск')
+        self.btn_4.setText('Раскрасить')
+
+        self.add_item_dialogue.setWindowTitle('Добавление записи')
+        self.edit_item_dialogue.setWindowTitle('Редактирование записи')
 
     def setup_table(self):
         self.tbl_main.setColumnCount(2)
@@ -70,6 +101,7 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
             # color_code = '#{:03x}'.format(max(0, int(translate(date_delta.days, 0, 30, 0xf, 0x0))))
             self.tbl_main.item(row_n, 6).setBackground(QBrush(QColor(*color_code)))
             self.tbl_main.item(row_n, 6).setToolTip(str(date_delta))
+
 
 if __name__ == '__main__':
     app = QApplication([])

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Python\CarCheck\ui\widgets\mainwindow.ui'
 #
-# Created: Thu Mar 29 18:09:23 2018
+# Created: Fri Mar 30 04:11:37 2018
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,6 +43,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.box_search_selector)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.tbl_main = QtGui.QTableWidget(self.centralwidget)
+        self.tbl_main.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.tbl_main.setAlternatingRowColors(True)
+        self.tbl_main.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.tbl_main.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.tbl_main.setObjectName("tbl_main")
         self.tbl_main.setColumnCount(0)
         self.tbl_main.setRowCount(0)
@@ -69,6 +73,14 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.btn_1, self.btn_2)
+        MainWindow.setTabOrder(self.btn_2, self.btn_3)
+        MainWindow.setTabOrder(self.btn_3, self.btn_4)
+        MainWindow.setTabOrder(self.btn_4, self.line_search)
+        MainWindow.setTabOrder(self.line_search, self.box_search_selector)
+        MainWindow.setTabOrder(self.box_search_selector, self.btn_add)
+        MainWindow.setTabOrder(self.btn_add, self.btn_edit)
+        MainWindow.setTabOrder(self.btn_edit, self.tbl_main)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
@@ -76,6 +88,7 @@ class Ui_MainWindow(object):
         self.btn_2.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_3.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_4.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
+        self.tbl_main.setSortingEnabled(True)
         self.btn_add.setText(QtGui.QApplication.translate("MainWindow", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_edit.setText(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
 

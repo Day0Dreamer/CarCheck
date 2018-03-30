@@ -62,7 +62,23 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="tbl_main"/>
+     <widget class="QTableWidget" name="tbl_main">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -108,6 +124,17 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>btn_1</tabstop>
+  <tabstop>btn_2</tabstop>
+  <tabstop>btn_3</tabstop>
+  <tabstop>btn_4</tabstop>
+  <tabstop>line_search</tabstop>
+  <tabstop>box_search_selector</tabstop>
+  <tabstop>btn_add</tabstop>
+  <tabstop>btn_edit</tabstop>
+  <tabstop>tbl_main</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
