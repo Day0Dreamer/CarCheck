@@ -30,13 +30,37 @@ class Permits(Base):
     payment      = Column('Оплата', Float())
     description  = Column('Примечания', String())
     silenced     = Column('Silenced', Boolean(), default=False)
+    hide         = Column('Hidden', Boolean(), default=False)
 
-    def __repr__(self):
+    def __str__(self):
         return "РегЗнак: {}, ЗонаДей.: {}, От: {:^10}, До: {:^10}, Зак.: {}, Собст.: {}, Статус: {}, Цена: {}, " \
-               "Оплата: {}, Примечания: {}, Silenced: {}".format(self.car_number, self.zone, str(self.date_start),
-                                                                 str(self.date_end), self.client, self.owner,
-                                                                 self.status, self.price, self.payment,
-                                                                 self.description, self.silenced)
+               "Оплата: {}, Примечания: {}, Silenced: {}, Hidden: {}".format(self.car_number,
+                                                                             self.zone,
+                                                                             self.date_start.__str__(),
+                                                                             self.date_end.__str__(),
+                                                                             self.client,
+                                                                             self.owner,
+                                                                             self.status,
+                                                                             self.price,
+                                                                             self.payment,
+                                                                             self.description,
+                                                                             self.silenced,
+                                                                             self.hidden)
+
+    def dict(self):
+        return {
+            'Clients':      self.client,
+            'Owners':       self.owner,
+            'РегЗнак':      self.car_number,
+            'ЗонаДействия': self.zone,
+            'PermitStats':  self.status,
+            'ДатаНачала':   self.date_start,
+            'ДатаКонца':    self.date_end,
+            'Цена':         self.price,
+            'Оплата':       self.payment,
+            'Примечания':   self.description,
+            'Silenced':     self.silenced
+        }
 
 
 class Clients(Base):
@@ -46,7 +70,7 @@ class Clients(Base):
     permit = relationship('Permits', back_populates='client')
 
     def __repr__(self):
-        return self.name
+        return str(self.name)
         # return "<Status(id='{}', name='{}')>".format(self.id, self.name)
 
 
@@ -57,7 +81,7 @@ class Owners(Base):
     permit = relationship('Permits', back_populates='owner')
 
     def __repr__(self):
-        return self.name
+        return str(self.name)
         # return "<Status(id='{}', name='{}')>".format(self.id, self.name)
 
 
@@ -68,15 +92,11 @@ class PermitStats(Base):
     permit = relationship('Permits', back_populates='status')
 
     def __repr__(self):
-        return self.name
+        return str(self.name)
         # return "<Status(id='{}', name='{}')>".format(self.id, self.name)
 
 
 # PermitStats.__table__
-if __name__ == '__main__':
-    Base.metadata.create_all(engine)
-
-
 class SessionWrap(object):
     def __init__(self, session_class):
         self.session = session_class()
@@ -87,3 +107,12 @@ class SessionWrap(object):
     def __exit__(self, *args):
         # print(args)
         self.session.close()
+
+
+if __name__ == '__main__':
+    Base.metadata.create_all(engine)
+    with SessionWrap(sessionmaker(bind=engine)) as session:
+        session.add(Clients(id=0))
+        session.add(Owners(id=0))
+        session.commit()
+
