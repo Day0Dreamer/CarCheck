@@ -1,5 +1,6 @@
 from ui.widgets.edit_item_ui import Ui_Edit_Item_ui
-from PySide.QtGui import QDialog
+from PySide.QtGui import *
+from PySide.QtCore import *
 
 
 class UiEditItem(QDialog, Ui_Edit_Item_ui):
@@ -7,39 +8,54 @@ class UiEditItem(QDialog, Ui_Edit_Item_ui):
         super(UiEditItem, self).__init__()
         self.setupUi(self)
 
+        self.line_car_number.setValidator(QRegExpValidator(QRegExp('\D\d{3}\D{2}\d{3}'), self))
+        '''\D matches any character that\'s not a digit (equal to [^0-9])
+        \d{3} matches a digit (equal to [0-9])
+        \D{2} matches any character that\'s not a digit (equal to [^0-9])
+        \d{3} matches a digit (equal to [0-9])'''
+        self.line_sts.setValidator(QRegExpValidator(QRegExp('\d{2} \d{2} \d{6}'), self))
+        '''\d{2} matches a digit (equal to [0-9]) matches the character   literally (case sensitive)
+        \d{2} matches a digit (equal to [0-9])
+        №  matches the characters  №  literally (case sensitive)
+        \d{6} matches a digit (equal to [0-9])'''
+
     def write_fields(self, item: dict):
-        self.line_car_number.setText(item['РегЗнак'])
-        self.line_client.setText(item['Clients'].name)
-        self.line_owner.setText(item['Owners'].name)
-        self.line_zone.setText(item['ЗонаДействия'])
-        self.line_status.setText(item['PermitStatus'])
-        self.date_start.setDate(item['ДатаНачала'])
-        self.date_end.setDate(item['ДатаКонца'])
-        self.line_price.setText(item['Цена'])
-        self.line_payment.setText(item['Оплата'])
-        self.plain_description.setPlainText(item['Примечания'])
-        self.check_hidden.setCheckState(item['Hidden'])
-        self.check_silenced.setChecked(item['Silenced'])
+        self.line_client.setText(item['client'].name)
+        self.line_owner.setText(item['owner'].name)
+        self.line_car_number.setText(item['car_number'])
+        self.line_sts.setText(item['sts_number'])
+        self.box_zone.setCurrentIndex(self.box_zone.findText(item['zone']) if (item['zone']) else -1)
+        self.box_status.setCurrentIndex(self.box_status.findText(item['status'].name) if item['status'] else -1)
+        self.box_eco.setCurrentIndex(self.box_eco.findText(item['eco_class']))
+        self.date_start.setDate(item['date_start'])
+        self.date_end.setDate(item['date_end'])
+        self.line_price.setText(str(item['price']) if item['price'] else '')
+        self.line_payment.setText(str(item['payment']) if item['payment'] else '')
+        self.plain_description.setPlainText(item['description'])
+        self.check_hidden.setChecked(item['hidden'])
+        self.check_silenced.setChecked(item['silenced'])
 
     def read_fields(self):
-        result = dict()
-        result['Clients']      = self.line_client.text() or None,
-        result['Owners']       = self.line_owner.text() or None,
-        result['РегЗнак']      = self.line_car_number.text() or None,
-        result['СТС']          = self.line_sts.text() or None,
-        result['ЗонаДействия'] = self.line_zone.text() or None,
-        result['PermitStatus'] = self.line_status.text() or None,
-        result['ДатаНачала']   = self.date_start.date().toPython() or None,
-        result['ДатаКонца']    = self.date_end.date().toPython() or None,
-        result['ЭкоКласс']     = self.line_eco.text() or None,
-        result['Цена']         = self.line_price.text() or None,
-        result['Оплата']       = self.line_payment.text() or None,
-        result['Примечания']   = self.plain_description.toPlainText() or None,
-        result['Путь']         = None,
-        result['Silenced']     = self.check_silenced.isChecked(),
-        result['Hidden']       = self.check_hidden.isChecked(),
-        [print(i) for i in result.items()]
+        print(self.line_price.text())
+        result = dict(
+            client=self.line_client.text() or None,
+            owner=self.line_owner.text() or None,
+            car_number=self.line_car_number.text() or None,
+            sts_number=self.line_sts.text() or None,
+            zone=self.box_zone.currentText() or None,
+            status=self.box_status.currentText() or None,
+            eco_class=self.box_eco.currentText() or None,
+            date_start=self.date_start.date().toPython() or None,
+            date_end=self.date_end.date().toPython() or None,
+            price=float(self.line_price.text()) if self.line_price.text() else None,
+            payment=float(self.line_payment.text()) if self.line_payment.text() else None,
+            description=self.plain_description.toPlainText() or None,
+            tba_1=None,
+            hidden=self.check_hidden.isChecked(),
+            silenced=self.check_silenced.isChecked())
+        # print(result)
         return result
+
 
 
 if __name__ == '__main__':

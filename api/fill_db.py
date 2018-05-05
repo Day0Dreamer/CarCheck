@@ -9,7 +9,7 @@ if __name__ == '__main__':
     # Add new items to СтатусыПропуска
     with SessionWrap(Session) as session:
         session.query(PermitStatus).delete()  # Drop all data from the table
-        for i in ['разовый', 'временный', 'полугодовой', 'годовой']:
+        for i in ['Разовый', 'Временный', 'Полугодовой', 'Годовой']:
             session.add(PermitStatus(name=i))
         session.commit()
 

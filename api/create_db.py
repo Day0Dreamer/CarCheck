@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+""" This module creates a database and deletes previous one if it exists"""
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -15,6 +17,16 @@ Base = declarative_base()
 
 
 class Permits(Base):
+    """Representation of table Пропуски
+
+    Methods:
+    =======================
+    get_to_dict()
+
+    set_from_dict()
+
+
+"""
     __tablename__ = 'Пропуски'
     client = relationship('Clients', back_populates='permit')
     client_id    = Column(Integer(), ForeignKey('Заказчики.id'))
@@ -27,13 +39,13 @@ class Permits(Base):
     status_id    = Column(Integer(), ForeignKey('СтатусыПропуска.id'))
     date_start   = Column('ДатаНачала', Date())
     date_end     = Column('ДатаКонца', Date())
-    eco_class    = Column('ЭкоКласс', String(), nullable=False)
+    eco_class    = Column('ЭкоКласс', String())
     price        = Column('Цена', Float())
     payment      = Column('Оплата', Float())
     description  = Column('Примечания', String())
     tba_1        = Column('Путь', String())
     silenced     = Column('Silenced', Boolean(), default=False)
-    hide         = Column('Hidden', Boolean(), default=False)
+    hidden         = Column('Hidden', Boolean(), default=False)
 
     def __str__(self):
         return "РегЗнак: {}, ЗонаДей.: {}, От: {:^10}, До: {:^10}, Зак.: {}, Собст.: {}, Статус: {}, Цена: {}, " \
@@ -50,20 +62,50 @@ class Permits(Base):
                                                                              self.silenced,
                                                                              self.hidden)
 
-    def dict(self):
+    def get_to_dict(self):
+        """
+        Returns:
+            dict: client, owner, car_number, sts_number, zone, status, date_start, date_end, eco_class, price, payment,
+            description, tba_1, silenced, hidden."""
         return {
-            'Clients':      self.client,
-            'Owners':       self.owner,
-            'РегЗнак':      self.car_number,
-            'ЗонаДействия': self.zone,
-            'PermitStatus':  self.status,
-            'ДатаНачала':   self.date_start,
-            'ДатаКонца':    self.date_end,
-            'Цена':         self.price,
-            'Оплата':       self.payment,
-            'Примечания':   self.description,
-            'Silenced':     self.silenced
+            'client':      self.client,
+            'owner':       self.owner,
+            'car_number':  self.car_number,
+            'sts_number':  self.sts_number,
+            'zone':        self.zone,
+            'status':      self.status,
+            'date_start':  self.date_start,
+            'date_end':    self.date_end,
+            'eco_class':   self.eco_class,
+            'price':       self.price,
+            'payment':     self.payment,
+            'description': self.description,
+            'tba_1':       self.tba_1,
+            'silenced':    self.silenced,
+            'hidden':      self.hidden
         }
+
+    def set_from_dict(self, **kwargs):
+        """
+        **kwargs:
+            dict: client, owner, car_number, sts_number, zone, status, date_start, date_end, eco_class, price, payment,
+            description, tba_1, silenced, hidden."""
+
+        self.client =       kwargs['client']
+        self.owner =        kwargs['owner']
+        self.car_number =   kwargs['car_number']
+        self.sts_number =   kwargs['sts_number']
+        self.zone =         kwargs['zone']
+        self.status =       kwargs['status']
+        self.date_start =   kwargs['date_start']
+        self.date_end =     kwargs['date_end']
+        self.eco_class =    kwargs['eco_class']
+        self.price =        kwargs['price']
+        self.payment =      kwargs['payment']
+        self.description =  kwargs['description']
+        self.tba_1 =        kwargs['tba_1']
+        self.silenced =     kwargs['silenced']
+        self.hidden =       kwargs['hidden']
 
 
 class Clients(Base):

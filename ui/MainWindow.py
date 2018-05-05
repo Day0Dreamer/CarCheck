@@ -1,9 +1,11 @@
 from ui.widgets.mainwindow_ui import Ui_MainWindow
 from ui.Edit_Item import UiEditItem
+from ui import translation
 from ui import stylesheet
 from PySide.QtGui import *
 from PySide.QtCore import *
 from datetime import date, datetime
+import api.query_db
 
 
 def translate(value, left_min, left_max, right_min, right_max):
@@ -32,7 +34,7 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
         super(UIMainWindow, self).__init__()
         self.setupUi(self)
         self.setStyleSheet(stylesheet.houdini)
-        # self.fill_table()
+        self.db = api.query_db.DB()
 
         self.add_item_dialogue = UiEditItem()
         self.add_item_dialogue.setStyleSheet(self.styleSheet())
@@ -45,6 +47,10 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
         self.edit_item_dialogue.setStyleSheet(self.styleSheet())
         self.edit_item_dialogue.buttonBox.buttons()[0].setText('Edit')
         self.btn_edit.clicked.connect(self.edit_item_dialogue.exec_)
+        # On [edit]
+        @self.edit_item_dialogue.buttonBox.accepted.connect
+        def change_car():
+            self.db.change_car(self.edit_item_dialogue.read_fields())
 
         # Fill table with nothing
         self.btn_2.clicked.connect(lambda: self.fill_table([{}]))
@@ -53,6 +59,50 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
         self.btn_4.clicked.connect(self.paint_by_date)
 
         self.name_interface()
+        # /////////////////
+        li = self.db.get_all()
+        self.fill_table(li)
+
+        # Update DB table readout
+        self.btn_1.clicked.connect(lambda: self.fill_table(li))
+        # DB search functionality
+        search = lambda: self.fill_table(self.db.get_entry_as_dict(self.line_search.text(),
+                                                                   self.box_search_selector.currentText()))
+        self.btn_3.clicked.connect(search)
+        self.line_search.textChanged.connect(search)
+        self.box_search_selector.currentIndexChanged.connect(search)
+
+        self.tbl_main.itemActivated.connect(lambda: self.edit_item_dialogue.exec_())
+
+        self.tbl_main.doubleClicked.connect(self.edit_item)
+        self.btn_edit.clicked.connect(self.edit_item)
+
+        # self.btn_edit.clicked.connect(lambda: self.edit_item_dialogue.exec_())
+        self.btn_add.clicked.connect(self.add_item)
+
+    def edit_item(self):
+        row_index = self.tbl_main.selectedIndexes()[0].row()
+
+        highlight_row = translation.permit_table['car_number']
+        for i in range(self.tbl_main.horizontalHeader().count()):
+            row_name = self.tbl_main.model().headerData(i, Qt.Horizontal)
+            if row_name == highlight_row:
+                highlight_row = i
+                break
+
+        item = self.tbl_main.item(row_index, highlight_row)
+        selected_car = item.text()
+
+        entry = self.db.get_entry_as_dict(selected_car, 'car_number')[0]
+        # print(entry['status'])
+        self.edit_item_dialogue.write_fields(entry)
+        # print(entry)
+
+
+    def add_item(self):
+        print('adding item')
+        self.db.add_new_car(**self.add_item_dialogue.read_fields())
+
 
     def name_interface(self):
         self.btn_1.setText('Загрузить таблицу')
@@ -73,14 +123,16 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
             col_list = list(data[0].keys())
             self.tbl_main.setRowCount(len(list_of_rows))
             self.tbl_main.setColumnCount(len(col_list))
-            self.tbl_main.setHorizontalHeaderLabels(col_list)
+            translated_horizontal_labels = [translation.permit_table[i] for i in col_list]
+            self.tbl_main.setHorizontalHeaderLabels(translated_horizontal_labels)
             # For each row which is a dictionary, get row index and row's dictionary
             for row, row_dict in enumerate(list_of_rows):
                 # For each column in a row, get column index and it's key
                 for col, key in enumerate(row_dict.keys()):
                     value = row_dict[key]       # Get value assigned to the key
                     item = QTableWidgetItem()   # Create a new item
-                    item.setText(str(value))    # Rename the item with the value
+                    value = str(value).replace('None', '') if value else ''  # Replace None data with empty string
+                    item.setText(value)    # Rename the item with the value
                     self.tbl_main.setItem(row, col, item)  # Add to the table indexRow and indexCol and the item
 
             if not self.box_search_selector.count():
@@ -92,15 +144,20 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
             print('Empty SQL result')
 
     def paint_by_date(self):
+        highlight_row = 'Дата по'
+        for i in range(self.tbl_main.horizontalHeader().count()):
+            row_name = self.tbl_main.model().headerData(i, Qt.Horizontal)
+            if row_name == highlight_row:
+                highlight_row = i
+                break
         for row_n in range(self.tbl_main.rowCount()):
-            # QTableWidgetItem()
-            str_date = self.tbl_main.item(row_n, 6).text()
+            str_date = self.tbl_main.item(row_n, highlight_row).text()
             date_date = datetime.strptime(str_date, '%Y-%m-%d').date()
             date_delta = date_date - date.today()
             color_code = rgb(0,7,date_delta.days)
             # color_code = '#{:03x}'.format(max(0, int(translate(date_delta.days, 0, 30, 0xf, 0x0))))
-            self.tbl_main.item(row_n, 6).setBackground(QBrush(QColor(*color_code)))
-            self.tbl_main.item(row_n, 6).setToolTip(str(date_delta))
+            self.tbl_main.item(row_n, highlight_row).setBackground(QBrush(QColor(*color_code)))
+            self.tbl_main.item(row_n, highlight_row).setToolTip(str(date_delta))
 
 
 if __name__ == '__main__':

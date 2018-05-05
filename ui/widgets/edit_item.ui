@@ -7,25 +7,25 @@
     <x>0</x>
     <y>0</y>
     <width>255</width>
-    <height>433</height>
+    <height>439</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="line_owner"/>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="line_client"/>
-   </item>
+   <property name="fieldGrowthPolicy">
+    <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+   </property>
    <item row="1" column="0">
     <widget class="QLabel" name="label_client">
      <property name="text">
       <string>Заказчик</string>
      </property>
     </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="line_client"/>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_owner">
@@ -34,37 +34,150 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="line_owner"/>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="label_car_number">
      <property name="text">
       <string>РегЗнак</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="3" column="1">
     <widget class="QLineEdit" name="line_car_number"/>
    </item>
    <item row="4" column="0">
+    <widget class="QLabel" name="label_sts">
+     <property name="text">
+      <string>СТС</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="line_sts"/>
+   </item>
+   <item row="5" column="0">
     <widget class="QLabel" name="label_zone">
      <property name="text">
       <string>Зона действия</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="line_zone"/>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="box_zone">
+     <item>
+      <property name="text">
+       <string>СК</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТТК</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МКАД</string>
+      </property>
+     </item>
+    </widget>
    </item>
-   <item row="5" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="label_status">
      <property name="text">
       <string>Статус</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
-    <widget class="QLineEdit" name="line_status"/>
+   <item row="6" column="1">
+    <widget class="QComboBox" name="box_status">
+     <item>
+      <property name="text">
+       <string>Разовый</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Временный</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Полугодовой</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Годовой</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_eco">
+     <property name="text">
+      <string>Эко-класс</string>
+     </property>
+    </widget>
    </item>
    <item row="7" column="1">
+    <widget class="QComboBox" name="box_eco">
+     <item>
+      <property name="text">
+       <string>Нет данных</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Не установлен</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>6</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_date_start">
+     <property name="text">
+      <string>Дата начала</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
     <widget class="QDateEdit" name="date_start">
      <property name="displayFormat">
       <string>dd/MM/yyyy</string>
@@ -74,7 +187,14 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="1">
+   <item row="9" column="0">
+    <widget class="QLabel" name="label_date_end">
+     <property name="text">
+      <string>Дата конца</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
     <widget class="QDateEdit" name="date_end">
      <property name="currentSection">
       <enum>QDateTimeEdit::DaySection</enum>
@@ -87,144 +207,71 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="label_date_start">
-     <property name="text">
-      <string>Дата начала</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label_date_end">
-     <property name="text">
-      <string>Дата конца</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="1">
-    <widget class="QLineEdit" name="line_price"/>
-   </item>
-   <item row="10" column="1">
-    <widget class="QLineEdit" name="line_payment"/>
-   </item>
-   <item row="11" column="1">
-    <widget class="QPlainTextEdit" name="plain_description"/>
-   </item>
-   <item row="9" column="0">
+   <item row="10" column="0">
     <widget class="QLabel" name="label_price">
      <property name="text">
       <string>Цена</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="0">
+   <item row="10" column="1">
+    <widget class="QLineEdit" name="line_price"/>
+   </item>
+   <item row="11" column="0">
     <widget class="QLabel" name="label_payment">
      <property name="text">
       <string>Оплата</string>
      </property>
     </widget>
    </item>
-   <item row="11" column="0">
+   <item row="11" column="1">
+    <widget class="QLineEdit" name="line_payment"/>
+   </item>
+   <item row="12" column="0">
     <widget class="QLabel" name="label_description">
      <property name="text">
       <string>Примечания</string>
      </property>
     </widget>
    </item>
-   <item row="14" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+   <item row="12" column="1">
+    <widget class="QPlainTextEdit" name="plain_description"/>
    </item>
-   <item row="12" column="0">
+   <item row="13" column="0">
     <widget class="QCheckBox" name="check_hidden">
      <property name="text">
       <string>Скрытый</string>
      </property>
     </widget>
    </item>
-   <item row="12" column="1">
+   <item row="13" column="1">
     <widget class="QCheckBox" name="check_silenced">
      <property name="text">
       <string>Напоминание</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="line_sts"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_sts">
-     <property name="text">
-      <string>СТС</string>
+   <item row="14" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="label_eco">
-     <property name="text">
-      <string>Эко-класс</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QLineEdit" name="line_eco"/>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>line_car_number</tabstop>
   <tabstop>line_client</tabstop>
   <tabstop>line_owner</tabstop>
-  <tabstop>line_zone</tabstop>
-  <tabstop>line_status</tabstop>
-  <tabstop>date_start</tabstop>
-  <tabstop>date_end</tabstop>
+  <tabstop>line_sts</tabstop>
   <tabstop>line_price</tabstop>
   <tabstop>line_payment</tabstop>
-  <tabstop>plain_description</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>date_start</tabstop>
+  <tabstop>date_end</tabstop>
   <tabstop>check_hidden</tabstop>
   <tabstop>check_silenced</tabstop>
+  <tabstop>plain_description</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Edit_Item_ui</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Edit_Item_ui</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
