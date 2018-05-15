@@ -1,4 +1,3 @@
-# pd.set_option('display.width', pd.get_option('display.width')*3)
 import ui.translation
 import ui
 import api.query_db

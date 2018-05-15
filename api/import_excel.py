@@ -1,25 +1,39 @@
 import pandas as pd
-from api.query_db import *
+import api.query_db
 from sqlalchemy import exc
-
 
 def excel2df(xls_path):
     xls = pd.ExcelFile(xls_path)
-    df1 = xls.parse()
-    return df1
+    _df = xls.parse()
+    return _df
 
 
-if __name__ == '__main__':
-    db = DB('sqlite:///C:\\Python\\CarCheck\\db.sqlite')
+def df2excel(_df, xls_path):
+    excel_writer = pd.ExcelWriter(xls_path, 'xlsxwriter')
+    # _df = pd.DataFrame if True else False
+    # _df.to_excel(excel_writer, index=False)
+    _df[['client']] = _df[['client']].astype(str)
+    _df[['owner']] = _df[['owner']].astype(str)
+    _df[['status']] = _df[['status']].astype(str)
 
-    # df = excel2df(r'excel_data/Novye_propuska.xlsx')
-    df = excel2df(r'../excel_data/Novye_propuska.xlsx')
-    df = df.fillna({'СРОК ДЕЙСТВИЯ ОТ':date.fromordinal(1), 'СРОК ДЕЙСТВИЯ ДО':date.fromordinal(1)})
+    _df.to_excel(excel_writer, index=False)
+    worksheet = excel_writer.sheets['Sheet1']
+    worksheet.set_column("A:B", 40)
+    print(excel_writer.save())
+
+
+
+    # excel_writer.save()
+
+
+def import_from_df(_df):
+    db = api.query_db.DB()
+    _df = _df.fillna({'СРОК ДЕЙСТВИЯ ОТ':api.query_db.date.fromtimestamp(0), 'СРОК ДЕЙСТВИЯ ДО':api.query_db.date.fromtimestamp(0)})
     # df.keys()
     # print(df.to_string())
 
     # Select only needed columns
-    x = df.reindex(columns=['СОБСТВЕННИК',
+    x = _df.reindex(columns=['СОБСТВЕННИК',
                             'ЗАКАЗЧИК',
                             '№ СТС',
                             'РЕГ.ЗНАК',
@@ -51,7 +65,15 @@ if __name__ == '__main__':
                 hidden=False,
                 silenced=False)
 
-            db.add_new_car(**car_dict)
+            db.add_new_car(car_dict)
         except exc.IntegrityError as e:
             print(e)
             print(row)
+
+
+if __name__ == '__main__':
+
+
+    # df = excel2df(r'excel_data/Novye_propuska.xlsx')
+    df = excel2df(r'../excel_data/Novye_propuska.xlsx')
+    import_from_df(df)

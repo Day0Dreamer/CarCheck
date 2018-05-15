@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Python\CarCheck\ui\widgets\mainwindow.ui'
 #
-# Created: Fri Mar 30 04:11:37 2018
+# Created: Thu May 10 01:12:25 2018
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -61,15 +61,40 @@ class Ui_MainWindow(object):
         self.btn_edit.setMinimumSize(QtCore.QSize(0, 50))
         self.btn_edit.setObjectName("btn_edit")
         self.horizontalLayout_2.addWidget(self.btn_edit)
+        self.btn_delete = QtGui.QPushButton(self.centralwidget)
+        self.btn_delete.setMinimumSize(QtCore.QSize(0, 50))
+        self.btn_delete.setObjectName("btn_delete")
+        self.horizontalLayout_2.addWidget(self.btn_delete)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         self.menubar.setObjectName("menubar")
+        self.menuDB = QtGui.QMenu(self.menubar)
+        self.menuDB.setObjectName("menuDB")
+        self.menu_Settings = QtGui.QMenu(self.menubar)
+        self.menu_Settings.setObjectName("menu_Settings")
+        self.menuFile = QtGui.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.action_Import = QtGui.QAction(MainWindow)
+        self.action_Import.setObjectName("action_Import")
+        self.action_Export = QtGui.QAction(MainWindow)
+        self.action_Export.setObjectName("action_Export")
+        self.action_Settings = QtGui.QAction(MainWindow)
+        self.action_Settings.setObjectName("action_Settings")
+        self.actionE_xit = QtGui.QAction(MainWindow)
+        self.actionE_xit.setObjectName("actionE_xit")
+        self.menuDB.addAction(self.action_Import)
+        self.menuDB.addAction(self.action_Export)
+        self.menu_Settings.addAction(self.action_Settings)
+        self.menuFile.addAction(self.actionE_xit)
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuDB.menuAction())
+        self.menubar.addAction(self.menu_Settings.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -88,7 +113,15 @@ class Ui_MainWindow(object):
         self.btn_2.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_3.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_4.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
-        self.tbl_main.setSortingEnabled(True)
+        # self.tbl_main.setSortingEnabled(True)
         self.btn_add.setText(QtGui.QApplication.translate("MainWindow", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_edit.setText(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
+        self.btn_delete.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuDB.setTitle(QtGui.QApplication.translate("MainWindow", "&DB", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_Settings.setTitle(QtGui.QApplication.translate("MainWindow", "&Edit", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Import.setText(QtGui.QApplication.translate("MainWindow", "&Import", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Export.setText(QtGui.QApplication.translate("MainWindow", "&Export", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Settings.setText(QtGui.QApplication.translate("MainWindow", "&Settings", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionE_xit.setText(QtGui.QApplication.translate("MainWindow", "E&xit", None, QtGui.QApplication.UnicodeUTF8))
 

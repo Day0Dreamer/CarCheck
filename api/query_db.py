@@ -1,41 +1,87 @@
 # -*- coding: utf-8 -*-
 """ This module manages requests to the DB"""
+import pandas as pd
 from datetime import date, timedelta
 from math import isnan
 from api.create_db import *
+pd.set_option('display.width', pd.get_option('display.width')*3)
 
+
+
+class DataType(object):
+    OBJECT = 1
+    DICT = 2
+    DATAFRAME = 3
 
 def xstr(s):
+    """This method converts any non-sting objects as empty stings and returns stings as stings.
+
+    Args:
+        s(str): A potential string
+
+    Returns:
+        str: Always return a string, if received None, then an empty sting.
+    """
     if s is not str:
         return ''
-    return str(s)
+    return s
 
 
 class DB(object):
+    """
+    DB Class works with a database, creating a connection to it, and offering methods for common operations.
+    """
     def __init__(self, db_path='sqlite:///C:\\Python\\CarCheck\\db.sqlite'):
+        """
+        Creates db_engine and a session handle
+
+        Args:
+            db_path: (:class:`DB`) Relative or Absolute path to the DB
+        """
         self.engine = create_engine(db_path)
         self.Session = sessionmaker(bind=self.engine)
 
-    def get_all(self):
-        result = []
+    def get_all(self, return_type):
+        """
+        Return all the rows in a Permits table
+
+        Args:
+            return_type(DataType): What type of data to return
+        Returns:
+            `list` `dataframe`: of Permits objects or Permits dictionaries
+        """
+
+        objects = []
+        dicts = []
         with SessionWrap(self.Session) as session:
-            for permit in session.query(Permits):  # .order_by(Permits.car_number):
-                result.append(permit.get_to_dict())
-                # print(vars(permit))
-            # print(Permits.__dict__)
+            for permit in session.query(Permits).order_by(Permits.date_end):
+                objects.append(permit)
+                dicts.append(permit.get_to_dict())
+            if return_type == DataType.OBJECT:
+                result = objects
+            elif return_type == DataType.DICT:
+                result = dicts
+            elif return_type == DataType.DATAFRAME:
+                result = pd.DataFrame(dicts)
+            else:
+                return None
         return result
 
     @staticmethod
     def relational_search_or_create(data_set, table_class, data_set_key, session):
         """
+        This method searches for existing entry in a relational table, gets the first entry and
+        injects it into the data_set.
+        In case the searched item is None or Nan or empty object corresponding to id=0 is inserted.
+        Otherwise the method creates a new entry inside the related table and relays it's handle to the data_set.
 
         Args:
-            data_set: **Unpacked dictionary with the data
+            data_set(dict): Dictionary with the data containing all the fields for a table's columns
             table_class: Class responsible for a DB-table
-            data_set_key: Field to search for (For Clients class it is 'clients')
+            data_set_key(str): Field to search for (For Clients class it is 'clients')
 
         Returns:
-            New modified data_set
+            dict: New modified data_set
         """
         nan = False
         if isinstance(data_set[data_set_key], float):            # If client_name is float
@@ -52,9 +98,7 @@ class DB(object):
         return data_set
 
     def add_new_car(self, data_set):
-        """, client_name=None, owner_name=None, car_number=None, sts_number=None, zone=None, status=None,
-                    date_start=None, date_end=None, eco_class=None, price=None, payment=None, description=None,
-                    tba_1=None, silenced=None, hide=None):"""
+        """TODO edit this."""
 
         with SessionWrap(self.Session) as session:
 
@@ -94,27 +138,31 @@ class DB(object):
             session.commit()
 
     def change_car(self, data_set):
+        """
+        Modifies an entry in the DB
+
+        Args:
+            data_set(dict): data_set containing a new data for a found entry in the DB
+        """
         with SessionWrap(self.Session) as session:
-            # entry = session.query(Permits).filter(Permits.car_number == data_set['car_number']).first()
-            entry = self.__find_entry(data_set['car_number'], 'car_number', session)[0]
-                # session.query(Permits).filter(Permits.car_number == data_set['car_number']).first()
-            # print(type(entry))
-            # print('e', entry)
-            # print('n', data_set)
+            entry = self._find_entry(data_set['car_number'], 'car_number', session)[0]
             data_set = self.relational_search_or_create(data_set, Clients, 'client', session)
             data_set = self.relational_search_or_create(data_set, Owners, 'owner', session)
+            data_set = self.relational_search_or_create(data_set, PermitStatus, 'status', session)
             print(data_set)
             entry.set_from_dict(**data_set)
             session.commit()
 
     @staticmethod
-    def __find_entry(request, column_of_interest, session):
+    def _find_entry(request, column_of_interest, session):
         """
         Finds all entries and returns them as list of SQL-objects
+        Needs a already started session
 
         Args:
-            request:
-            column_of_interest:
+            request(str): Value contained in a table-cell to find
+            column_of_interest(str): Column of a db-table to search across
+            session(self.Session): DB session to work with
 
         Returns:
             :obj:`list` of :obj:`dict`: List of SQL-objects
@@ -143,10 +191,36 @@ class DB(object):
         return result
 
     def get_entry_as_dict(self, request, column_of_interest):
+        """
+        Starts a :obj:`self.Session` finds and returns a DB entry in a `list` of `dict` of `str` format.
+
+        Args:
+            request(str): Value contained in a table-cell to find
+            column_of_interest(str): Column of a db-table to search across
+
+        Returns:
+            list: of dicts with text representation
+        """
         with SessionWrap(self.Session) as session:
-            list_of_entries = self.__find_entry(request, column_of_interest, session)
+            list_of_entries = self._find_entry(request, column_of_interest, session)
             list_of_dicts = [entry.get_to_dict() for entry in list_of_entries]
         return list_of_dicts
+
+    def delete_entry(self, request, column_of_interest):
+        """
+        Deletes an entry
+
+        Args:
+            request(str): Value contained in a table-cell to find
+            column_of_interest(str): Column of a db-table to search across
+
+        """
+        with SessionWrap(self.Session) as session:
+            list_of_entries = self._find_entry(request, column_of_interest, session)
+            # list_of_dicts = [entry.get_to_dict() for entry in list_of_entries]
+            session.delete(list_of_entries[0])
+            session.commit()
+        # return list_of_dicts
 
 
     def test(self):

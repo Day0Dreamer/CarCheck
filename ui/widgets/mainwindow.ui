@@ -108,6 +108,19 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="btn_delete">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Delete</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -121,8 +134,50 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuDB">
+    <property name="title">
+     <string>&amp;DB</string>
+    </property>
+    <addaction name="action_Import"/>
+    <addaction name="action_Export"/>
+   </widget>
+   <widget class="QMenu" name="menu_Settings">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="action_Settings"/>
+   </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionE_xit"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuDB"/>
+   <addaction name="menu_Settings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Import">
+   <property name="text">
+    <string>&amp;Import</string>
+   </property>
+  </action>
+  <action name="action_Export">
+   <property name="text">
+    <string>&amp;Export</string>
+   </property>
+  </action>
+  <action name="action_Settings">
+   <property name="text">
+    <string>&amp;Settings</string>
+   </property>
+  </action>
+  <action name="actionE_xit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>btn_1</tabstop>
