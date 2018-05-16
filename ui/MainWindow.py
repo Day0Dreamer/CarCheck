@@ -148,27 +148,35 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
 
         self.update_table()
 
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.notify)
+        self.timer.start(15000)
+
     def notify(self, title='Алюрт', desc=''):
         df = self.db.get_all(api.query_db.DataType.DATAFRAME)
-        # print(df[df['silenced'] == False])
-        overdue = df[df['date_end'].gt(date.fromtimestamp(100000))]  # With a date
+        overdue = df[df['silenced'] == False]
+        overdue = overdue[overdue['date_end'].gt(date.fromtimestamp(100000))]  # With a date
         overdue = overdue[overdue['date_end'].le(date.today())]  # Less or equal of today
         overdue = overdue.rename(columns=translation.permit_table)
-        overdue = overdue.iloc[1]
-        print(overdue.to_string())
-        if isinstance(overdue, api.query_db.pd.DataFrame):
-            not_title = 'Алюрт'
-            not_desc = 'Несколько машин требуют внимания'
-        else:
-            not_title = 'Алюрт'
-            not_desc = overdue.to_string(header=[translation.permit_table[i] for i in translation.permit_table])
-            # for key in translation.permit_table:
-            #     not_desc = not_desc.replace(key, translation.permit_table[key])
+        if len(overdue):
+            if len(overdue) > 1:
+                not_title = 'Алюрт'
+                not_desc = 'Несколько машин требуют внимания'
+            else:
+                not_title = 'Алюрт'
+                not_desc = overdue.iloc[0].to_string()
+                not_desc = not_desc.replace('   ', ' ')
+                not_desc = not_desc.splitlines()
+                not_desc = [line[:32]+"..." if len(line) > 32 else line for line in not_desc]
+                not_desc = '\n'.join(not_desc)
+                print(not_desc)
+                # for key in translation.permit_table:
+                #     not_desc = not_desc.replace(key, translation.permit_table[key])
 
-        self.notification.show_toast(not_title,
-                                     not_desc,
-                                     duration=10,
-                                     threaded=True)
+            self.notification.show_toast(not_title,
+                                         not_desc,
+                                         duration=10,
+                                         threaded=True)
 
     # DB search functionality
     def search(self):
@@ -293,6 +301,8 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
         for row_n in range(self.tbl_main.rowCount()):
             str_date = self.tbl_main.item(row_n, highlight_row).text()
             date_date = datetime.strptime(str_date, '%Y-%m-%d').date()
+            if date_date < date.fromtimestamp(100000):
+                continue
             date_delta = date_date - date.today()
             color_code = rgb(0,7,date_delta.days)
             # color_code = '#{:03x}'.format(max(0, int(translate(date_delta.days, 0, 30, 0xf, 0x0))))
