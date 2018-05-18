@@ -1,15 +1,16 @@
-import pandas as pd
+from pandas import ExcelWriter, ExcelFile
 import api.query_db
 from sqlalchemy import exc
 
+
 def excel2df(xls_path):
-    xls = pd.ExcelFile(xls_path)
+    xls = ExcelFile(xls_path)
     _df = xls.parse()
     return _df
 
 
 def df2excel(_df, xls_path):
-    excel_writer = pd.ExcelWriter(xls_path, 'xlsxwriter')
+    excel_writer = ExcelWriter(xls_path, 'xlsxwriter')
     # _df = pd.DataFrame if True else False
     # _df.to_excel(excel_writer, index=False)
     _df[['client']] = _df[['client']].astype(str)

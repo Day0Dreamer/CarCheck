@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """ This module manages requests to the DB"""
-import pandas as pd
+from pandas import DataFrame, get_option, set_option
 from datetime import date, timedelta
 from math import isnan
 from api.create_db import *
-pd.set_option('display.width', pd.get_option('display.width')*3)
+set_option('display.width', get_option('display.width')*3)
 
 
 
@@ -62,7 +62,7 @@ class DB(object):
             elif return_type == DataType.DICT:
                 result = dicts
             elif return_type == DataType.DATAFRAME:
-                result = pd.DataFrame(dicts)
+                result = DataFrame(dicts)
             else:
                 return None
         return result
