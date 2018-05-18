@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-from win10toast import ToastNotifier
+from pandas import IndexSlice
 from PySide.QtCore import *
 from PySide.QtGui import *
 
@@ -9,7 +9,9 @@ from ui import translation
 from ui.Edit_Item import UiEditItem
 from ui.export_view import UIExportView
 from ui.import_view import UIImportView
+from ui.notification import UInotification
 from ui.widgets.mainwindow_ui import Ui_MainWindow
+from ui.widgets import title_bar
 
 
 def translate(value, left_min, left_max, right_min, right_max):
@@ -56,19 +58,34 @@ class _QTableWidget(QTableWidget):
     # def mousePressEvent(self, event):
     #     super(_QTableWidget, self).mousePressEvent(event)
         # print(event.pos())
-# QMouseEvent.op
-# QHeaderView.name
+
 
 class UIMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(UIMainWindow, self).__init__()
         self.setupUi(self)
         self.setStyleSheet(stylesheet.houdini)
-        self.notification = ToastNotifier()
+        self.setWindowFlags(Qt.FramelessWindowHint)
+
+        top_btn_row = self.verticalLayout.takeAt(0)
+        search_line = self.verticalLayout.takeAt(0)
+        unknown = self.verticalLayout.takeAt(0)
+        record_mng = self.verticalLayout.takeAt(0)
+
+        self._title = title_bar.TitleBar(self, '', 30)
+        self.verticalLayout.addWidget(self._title)
+        # self._title.title.setMenu(self.menuFile)
+        self.menubar.hide()
+
+        self._title.menu_bar.addMenu(self.menuFile)
+        self._title.menu_bar.addMenu(self.menuDB)
+        self._title.menu_bar.addMenu(self.menu_Settings)
+
+        self.verticalLayout.addItem(top_btn_row)
+        self.verticalLayout.addItem(search_line)
 
         self.verticalLayout.removeWidget(self.tbl_main)
         self.tbl_main.deleteLater()
-
         self.tbl_main = _QTableWidget(self.centralwidget)
         self.tbl_main.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tbl_main.setAlternatingRowColors(True)
@@ -78,7 +95,8 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
         self.tbl_main.setColumnCount(0)
         self.tbl_main.setRowCount(0)
         self.verticalLayout.addWidget(self.tbl_main)
-        self.verticalLayout.addItem(self.verticalLayout.takeAt(2))
+
+        self.verticalLayout.addItem(record_mng)
 
         self.db = api.query_db.DB()
 
@@ -97,7 +115,10 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
 
         self.export_view = UIExportView()
         self.export_view.setStyleSheet(self.styleSheet())
-        # self.action.triggered.connect(self.export_view.show)
+        self.action_Export.triggered.connect(self.export_view.show)
+
+        self.notification7 = UInotification(self)
+        # self.notification7.show()
 
         self.shortcut_delete = QShortcut(QKeySequence(self.tr("Ctrl+Del")), self)
         self.shortcut_delete.setContext(Qt.WindowShortcut)
@@ -150,7 +171,7 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.notify)
-        self.timer.start(15000)
+        self.timer.start(5000)
 
     def notify(self, title='Алюрт', desc=''):
         df = self.db.get_all(api.query_db.DataType.DATAFRAME)
@@ -159,24 +180,21 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
         overdue = overdue[overdue['date_end'].le(date.today())]  # Less or equal of today
         overdue = overdue.rename(columns=translation.permit_table)
         if len(overdue):
+            print(overdue.columns)
+            overdue = overdue.reindex(columns=['Заказчик', 'Номер авто', 'Дата от', 'Дата по',
+                                               'Зона', 'Описание', 'Статус'])
+            print(overdue)
+            overdue.index += 1  # Shift index +1 so it matches with the table
             if len(overdue) > 1:
-                not_title = 'Алюрт'
-                not_desc = 'Несколько машин требуют внимания'
+                not_title = ''
             else:
-                not_title = 'Алюрт'
-                not_desc = overdue.iloc[0].to_string()
-                not_desc = not_desc.replace('   ', ' ')
-                not_desc = not_desc.splitlines()
-                not_desc = [line[:32]+"..." if len(line) > 32 else line for line in not_desc]
-                not_desc = '\n'.join(not_desc)
-                print(not_desc)
-                # for key in translation.permit_table:
-                #     not_desc = not_desc.replace(key, translation.permit_table[key])
-
-            self.notification.show_toast(not_title,
-                                         not_desc,
-                                         duration=10,
-                                         threaded=True)
+                not_title = ''
+                overdue = overdue.transpose()
+            # print(overdue.loc[:,'Зона'])
+            not_desc = overdue.style.render()
+            self.notification7.set_data(not_title, not_desc)
+            self.notification7.show()
+            # self.notification7.setParent(None)
 
     # DB search functionality
     def search(self):
