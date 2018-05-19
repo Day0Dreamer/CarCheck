@@ -316,6 +316,48 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
 
         self.tbl_main.resizeColumnsToContents()
 
+    def fill_table2(self, data):
+        """
+        Fills the table with info from the Permits table
+
+        Args:
+            data(DataFrame): List of dicts of Permits table
+        """
+        self.tbl_main.setRowCount(0)
+        self.tbl_main.setColumnCount(0)
+        if len(data):
+            list_of_rows = data
+            col_list = data.columns
+            self.tbl_main.setRowCount(len(list_of_rows))
+            self.tbl_main.setColumnCount(len(col_list))
+            # translated_horizontal_labels = [translation.permit_table[i] for i in col_list]
+            self.tbl_main.setHorizontalHeaderLabels(col_list)
+            self.tbl_main.column_menu_fill(col_list)
+            # For each row which is a dictionary, get row index and row's dictionary
+            for row, row_dict in enumerate(list_of_rows):
+                # For each column in a row, get column index and it's key
+                for col, key in enumerate(row_dict.keys()):
+                    value = row_dict[key]       # Get value assigned to the key
+                    item = QTableWidgetItem()   # Create a new item
+                    value = str(value).replace('None', '') if value else ''  # Replace None data with empty string
+                    item.setText(value)    # Rename the item with the value
+                    self.tbl_main.setItem(row, col, item)  # Add to the table indexRow and indexCol and the item
+
+            if not self.box_search_selector.count():
+                # self.box_search_selector.addItems(col_list)
+                self.box_search_selector.addItems(translated_horizontal_labels)
+            # self.box_search_selector.clear()
+
+            hide_list = ['Эко класс', 'Путь']
+            for i, v in enumerate(translated_horizontal_labels):
+                self.tbl_main.horizontalHeader().hideSection(i) if v in hide_list else 0
+        else:
+            self.tbl_main.setRowCount(0)
+            self.tbl_main.setColumnCount(0)
+            print('Empty SQL result')
+
+        self.tbl_main.resizeColumnsToContents()
+
     def paint_by_date(self):
         highlight_row = 'Дата по'
         for i in range(self.tbl_main.horizontalHeader().count()):
