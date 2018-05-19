@@ -98,7 +98,7 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
 
         self.verticalLayout.addItem(record_mng)
 
-        self.db = api.query_db.DB()
+        self.db = api.query_db.DB(db_path='sqlite:///db.sqlite')
 
         self.resize(1280+100, 720)
 
