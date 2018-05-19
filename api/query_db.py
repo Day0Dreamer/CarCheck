@@ -31,7 +31,7 @@ class DB(object):
     """
     DB Class works with a database, creating a connection to it, and offering methods for common operations.
     """
-    def __init__(self, db_path='sqlite:///C:\\Python\\CarCheck\\db.sqlite'):
+    def __init__(self, db_path='sqlite:///db.sqlite'):
         """
         Creates db_engine and a session handle
 
