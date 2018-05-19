@@ -2,7 +2,7 @@
 """ This module creates a database and deletes previous one if it exists"""
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, synonym
 
 if __name__ == '__main__':
 
@@ -29,28 +29,29 @@ class Permits(Base):
 """
     __tablename__ = 'Пропуски'
     client = relationship('Clients', back_populates='permit')
-    client_id    = Column(Integer(), ForeignKey('Заказчики.id'))
+    client_id    = Column(Integer(), ForeignKey('Заказчики.client_id'))
     owner  = relationship('Owners', back_populates='permit')
-    owner_id     = Column(Integer(), ForeignKey('Собственники.id'))
+    owner_id     = Column(Integer(), ForeignKey('Собственники.owner_id'))
     car_number   = Column('РегЗнак', String(8), primary_key=True, unique=True)
     sts_number   = Column('СТС', String(11), unique=True)
     zone         = Column('ЗонаДействия', String(8))
     status = relationship('PermitStatus', back_populates='permit')
-    status_id    = Column(Integer(), ForeignKey('СтатусыПропуска.id'))
+    status_id    = Column(Integer(), ForeignKey('СтатусыПропуска.status_id'))
+    date_docs    = Column('ДатаПодачи', Date())
     date_start   = Column('ДатаНачала', Date())
     date_end     = Column('ДатаКонца', Date())
     eco_class    = Column('ЭкоКласс', String())
     price        = Column('Цена', Float())
     payment      = Column('Оплата', Float())
     description  = Column('Примечания', String())
-    tba_1        = Column('Путь', String())
     silenced     = Column('Silenced', Boolean(), default=False)
-    hidden         = Column('Hidden', Boolean(), default=False)
+    hidden       = Column('Hidden', Boolean(), default=False)
 
     def __str__(self):
-        return "РегЗнак: {}, ЗонаДей.: {}, От: {:^10}, До: {:^10}, Зак.: {}, Собст.: {}, Статус: {}, Цена: {}, " \
+        return "РегЗнак: {}, ЗонаДей.: {}, Подача: {:^10}, От: {:^10}, До: {:^10}, Зак.: {}, Собст.: {}, Статус: {}, Цена: {}, " \
                "Оплата: {}, Примечания: {}, Silenced: {}, Hidden: {}".format(self.car_number,
                                                                              self.zone,
+                                                                             self.date_docs.__str__(),
                                                                              self.date_start.__str__(),
                                                                              self.date_end.__str__(),
                                                                              self.client,
@@ -66,7 +67,7 @@ class Permits(Base):
         """
         Returns:
             dict: client, owner, car_number, sts_number, zone, status, date_start, date_end, eco_class, price, payment,
-            description, tba_1, silenced, hidden."""
+            description, date_docs, silenced, hidden."""
         return {
             'client':      self.client,
             'owner':       self.owner,
@@ -80,7 +81,7 @@ class Permits(Base):
             'price':       self.price,
             'payment':     self.payment,
             'description': self.description,
-            'tba_1':       self.tba_1,
+            'date_docs':   self.date_docs,
             'silenced':    self.silenced,
             'hidden':      self.hidden
         }
@@ -89,7 +90,7 @@ class Permits(Base):
         """
         **kwargs:
             dict: client, owner, car_number, sts_number, zone, status, date_start, date_end, eco_class, price, payment,
-            description, tba_1, silenced, hidden."""
+            description, date_docs, silenced, hidden."""
 
         self.client =       kwargs['client']
         self.owner =        kwargs['owner']
@@ -103,14 +104,15 @@ class Permits(Base):
         self.price =        kwargs['price']
         self.payment =      kwargs['payment']
         self.description =  kwargs['description']
-        self.tba_1 =        kwargs['tba_1']
+        self.date_docs =    kwargs['date_docs']
         self.silenced =     kwargs['silenced']
         self.hidden =       kwargs['hidden']
 
 
 class Clients(Base):
     __tablename__ = 'Заказчики'
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    client_id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    id = synonym('client_id', descriptor=id)
     name = Column(String, unique=True)
     phone = Column(String)
     permit = relationship('Permits', back_populates='client')
@@ -122,7 +124,8 @@ class Clients(Base):
 
 class Owners(Base):
     __tablename__ = 'Собственники'
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    owner_id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    id = synonym('owner_id', descriptor=id)
     name = Column(String, unique=True)
     phone = Column(String)
     permit = relationship('Permits', back_populates='owner')
@@ -134,7 +137,8 @@ class Owners(Base):
 
 class PermitStatus(Base):
     __tablename__ = 'СтатусыПропуска'
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    status_id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    id = synonym('status_id', descriptor=id)
     name = Column(String)
     permit = relationship('Permits', back_populates='status')
 
@@ -159,7 +163,7 @@ class SessionWrap(object):
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     with SessionWrap(sessionmaker(bind=engine)) as session:
-        session.add(Clients(id=0))
-        session.add(Owners(id=0))
+        session.add(Clients(client_id=0))
+        session.add(Owners(owner_id=0))
         session.commit()
 

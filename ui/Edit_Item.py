@@ -29,6 +29,7 @@ class UiEditItem(QDialog, Ui_Edit_Item_ui):
         self.box_eco.setCurrentIndex(self.box_eco.findText(item['eco_class']))
         self.date_start.setDate(item['date_start'])
         self.date_end.setDate(item['date_end'])
+        self.date_docs.setDate(item['date_docs'])
         self.line_price.setText(str(item['price']) if item['price'] else '')
         self.line_payment.setText(str(item['payment']) if item['payment'] else '')
         self.plain_description.setPlainText(item['description'])
@@ -50,7 +51,7 @@ class UiEditItem(QDialog, Ui_Edit_Item_ui):
             price=float(self.line_price.text()) if self.line_price.text() else None,
             payment=float(self.line_payment.text()) if self.line_payment.text() else None,
             description=self.plain_description.toPlainText() or None,
-            tba_1=None,
+            date_docs=self.date_docs.date().toPython() or None,
             hidden=self.check_hidden.isChecked(),
             silenced=self.check_silenced.isChecked())
         # print(result)

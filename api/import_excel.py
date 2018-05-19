@@ -29,15 +29,15 @@ def df2excel(_df, xls_path):
 
 def import_from_df(_df):
     db = api.query_db.DB()
-    _df = _df.fillna({'СРОК ДЕЙСТВИЯ ОТ':api.query_db.date.fromtimestamp(0), 'СРОК ДЕЙСТВИЯ ДО':api.query_db.date.fromtimestamp(0)})
     # df.keys()
     # print(df.to_string())
 
     # Select only needed columns
-    x = _df.reindex(columns=['СОБСТВЕННИК',
+    _df = _df.reindex(columns=['СОБСТВЕННИК',
                             'ЗАКАЗЧИК',
                             '№ СТС',
                             'РЕГ.ЗНАК',
+                            'дата подачи документов',
                             'ЗОНА ДЕЙСТВИЯ  ПРОПУСКА',
                             'СТАСТУС ПРОПУСКА',
                             'СРОК ДЕЙСТВИЯ ОТ',
@@ -45,8 +45,14 @@ def import_from_df(_df):
                             'ЦЕНА',
                             'ОПЛАТА',
                             'Примечания'])
+
+    default_date = api.query_db.date.fromtimestamp(0)
+    _df = _df.fillna({'дата подачи документов':default_date,
+                      'СРОК ДЕЙСТВИЯ ОТ':default_date,
+                      'СРОК ДЕЙСТВИЯ ДО':default_date})
+
     # get each row as an Item
-    list_of_rows = x.iterrows()
+    list_of_rows = _df.iterrows()
     for index, row in list_of_rows:
         try:
             car_dict = dict(
@@ -57,12 +63,12 @@ def import_from_df(_df):
                 zone=None or row['ЗОНА ДЕЙСТВИЯ  ПРОПУСКА'],
                 status=None or row['СТАСТУС ПРОПУСКА'],
                 eco_class=None,
-                date_start=None or row['СРОК ДЕЙСТВИЯ ОТ'],
-                date_end=None or row['СРОК ДЕЙСТВИЯ ДО'],
+                date_start=row['СРОК ДЕЙСТВИЯ ОТ'] or default_date,
+                date_end=row['СРОК ДЕЙСТВИЯ ДО'] or default_date,
                 price=None or row['ЦЕНА'],
                 payment=None or row['ОПЛАТА'],
                 description=None or row['Примечания'],
-                tba_1=None,
+                date_docs=row['дата подачи документов'] or default_date,
                 hidden=False,
                 silenced=False)
 

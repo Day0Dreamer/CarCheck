@@ -171,19 +171,23 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.notify)
-        self.timer.start(5000)
+        self.timer.start(60000)
 
     def notify(self, title='Алюрт', desc=''):
         df = self.db.get_all(api.query_db.DataType.DATAFRAME)
-        overdue = df[df['silenced'] == False]
-        overdue = overdue[overdue['date_end'].gt(date.fromtimestamp(100000))]  # With a date
-        overdue = overdue[overdue['date_end'].le(date.today())]  # Less or equal of today
+        print(df.columns)
+        overdue = df[df['Silenced'] == False]
+        # overdue = df[df['Пропуски_Silenced'] == True]
+
+        overdue = overdue[overdue['Дата Конца'].dt.date.gt(date.fromtimestamp(100000))]  # With a date
+        overdue = overdue[overdue['Дата Конца'].dt.date.le(date.today())]  # Less or equal of today
+        overdue['Дата Конца'] = overdue['Дата Конца'].dt.floor('d')
         overdue = overdue.rename(columns=translation.permit_table)
         if len(overdue):
-            print(overdue.columns)
-            overdue = overdue.reindex(columns=['Заказчик', 'Номер авто', 'Дата от', 'Дата по',
-                                               'Зона', 'Описание', 'Статус'])
-            print(overdue)
+            # print(overdue.columns)
+            # overdue = overdue.reindex(columns=['Заказчик', 'Номер авто', 'Дата по'])
+            # overdue['Осталось дней'] = type(overdue['Дата по']-date.today())
+            # print(overdue['Дата по'].dt)
             overdue.index += 1  # Shift index +1 so it matches with the table
             if len(overdue) > 1:
                 not_title = ''
@@ -191,7 +195,10 @@ class UIMainWindow(QMainWindow, Ui_MainWindow):
                 not_title = ''
                 overdue = overdue.transpose()
             # print(overdue.loc[:,'Зона'])
-            not_desc = overdue.style.render()
+
+            not_desc = overdue.style.format({'Дата Подачи': "{:%Y.%m.%d}",
+                                             'Дата Начала': "{:%Y.%m.%d}",
+                                             'Дата Конца': "{:%Y.%m.%d}"}).render()
             self.notification7.set_data(not_title, not_desc)
             self.notification7.show()
             # self.notification7.setParent(None)

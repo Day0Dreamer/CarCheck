@@ -11,7 +11,7 @@ permit_table = dict(
     price='Цена',
     payment='Оплата',
     description='Описание',
-    tba_1='Путь',
+    date_docs='Дата подачи',
     silenced='Заглушенно',
     hidden='Скрыто'
 )

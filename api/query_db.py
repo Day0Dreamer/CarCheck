@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ This module manages requests to the DB"""
-from pandas import DataFrame, get_option, set_option
+from pandas import DataFrame, get_option, set_option, read_sql_table, read_sql_query
 from datetime import date, timedelta
 from math import isnan
 from api.create_db import *
@@ -39,6 +39,7 @@ class DB(object):
             db_path: (:class:`DB`) Relative or Absolute path to the DB
         """
         self.engine = create_engine(db_path)
+        self.connection = self.engine.connect()
         self.Session = sessionmaker(bind=self.engine)
 
     def get_all(self, return_type):
@@ -54,7 +55,9 @@ class DB(object):
         objects = []
         dicts = []
         with SessionWrap(self.Session) as session:
-            for permit in session.query(Permits).order_by(Permits.date_end):
+            query = session.query(Permits).order_by(Permits.date_end)
+            # print(str(query))
+            for permit in query:
                 objects.append(permit)
                 dicts.append(permit.get_to_dict())
             if return_type == DataType.OBJECT:
@@ -62,7 +65,33 @@ class DB(object):
             elif return_type == DataType.DICT:
                 result = dicts
             elif return_type == DataType.DATAFRAME:
-                result = DataFrame(dicts)
+                # result = read_sql_table('Пропуски', self.engine, parse_dates=['date_start, date_end, date_docs'])
+                query = 'SELECT Собственники.name AS Клиент,' \
+                        ' "Заказчики".name AS Заказчик,' \
+                        ' "Заказчики".phone AS Телефон,' \
+                        ' "Пропуски"."РегЗнак",' \
+                        ' "Пропуски"."СТС",' \
+                        ' "СтатусыПропуска"."name" AS Статус,' \
+                        ' "Пропуски"."ЗонаДействия" AS "Зона Действия",' \
+                        ' "Пропуски"."ДатаПодачи" AS "Дата Подачи",' \
+                        ' "Пропуски"."ДатаНачала" AS "Дата Начала",' \
+                        ' "Пропуски"."ДатаКонца" AS "Дата Конца",' \
+                        ' "Пропуски"."ЭкоКласс" AS "Эко Класс",' \
+                        ' "Пропуски"."Цена",' \
+                        ' "Пропуски"."Оплата",' \
+                        ' "Пропуски"."Примечания",' \
+                        ' "Пропуски"."Silenced" AS "Silenced",' \
+                        ' "Пропуски"."Hidden" AS "Hidden"' \
+                        ' FROM "Пропуски" ' \
+                        ' LEFT OUTER JOIN "Заказчики" USING (client_id) ' \
+                        ' LEFT OUTER JOIN "Собственники" USING (owner_id) ' \
+                        ' LEFT OUTER JOIN "СтатусыПропуска" USING (status_id)'
+                        # ' LEFT OUTER JOIN "Заказчики" ON "Пропуски"."client_id" = "Заказчики"."client_id" USING ("client_id")'\
+                        # ' NATURAL JOIN Собственники' \
+                        # ' NATURAL JOIN СтатусыПропуска' \
+                        # ' ORDER BY "Пропуски"."ДатаКонца"'
+                result = read_sql_query(query,self.connection, parse_dates=["Дата Подачи", "Дата Начала", "Дата Конца"])
+                # result = DataFrame(dicts)
             else:
                 return None
         return result
@@ -181,7 +210,7 @@ class DB(object):
             'price':       Permits.price.like('%{}%'.format(request)),
             'payment':     Permits.payment.like('%{}%'.format(request)),
             'description': Permits.description.like('%{}%'.format(request)),
-            'tba_1':       Permits.tba_1.like('%{}%'.format(request)),
+            'date_docs':       Permits.date_docs.like('%{}%'.format(request)),
             'silenced':    Permits.silenced.like('%{}%'.format(request)),
             'hidden':      Permits.hidden.like('%{}%'.format(request))}
 
